@@ -1,9 +1,3 @@
-
-
-
-
-
-
 var link=document.querySelector('input').value;
 var response=null;
 
@@ -25,6 +19,8 @@ var load = function (link){
           response = JSON.parse(this.response);
           console.log('onreadystatechange response', response);
           insertUrl(response,audio);
+          audio.play();
+          document.querySelector('.btn-play').classList.add("playing");
         }
       }
     };
@@ -59,15 +55,17 @@ dashboard.addEventListener('click', function (evt){
   if(evt.target.className==="btn-play disabled"){
     audio.play();
     evt.target.classList.add("playing");
-    setInterval(function(){
-      setProgress(audio,progress);
-    },500);
+    
   }else if(evt.target.className==="btn-play disabled playing"){
     audio.pause();
     evt.target.classList.remove("playing");
   }
 
 });
+
+audio.addEventListener('timeupdate',function(evt){
+    setProgress(audio,progress);
+})
 
 var setProgress=function(audio,progress){
   var ratio=30/audio.duration;
