@@ -6,10 +6,10 @@ var progress=document.querySelector("progress");
 var dashboard=document.querySelector('.widget');
 
 
-var load = function (link){
+var load = function (link, prefix){
   console.log(link);
   var xhr =new XMLHttpRequest();
-  xhr.open('GET', "https://api.spotify.com/v1/tracks/"+link);
+  xhr.open('GET', "https://api.spotify.com/v1/"+prefix+link);
   xhr.setRequestHeader('Accept', 'application/json'); //why accept
 
 
@@ -30,7 +30,7 @@ var load = function (link){
 };
 
 
-load(link);
+load(link, "tracks/");
 
 
 
@@ -40,14 +40,38 @@ audio.setAttribute('src', link);
 }
 
 
+var parseSearch=function(query){
+
+};
 
 document.addEventListener('submit', function (evt){
-  evt.preventDefault();
-  link= document.querySelector('input').value;
-  console.log(link);
-  load(link);
+    console.log(evt);
+    if(evt.target.id==='track'){
+      evt.preventDefault();
+      link= document.querySelector('input').value;
+      load(link, "tracks/" );
+
+    }
+
+    else if(evt.target.id==='searchItem'){
+      evt.preventDefault();
+      var words= document.querySelector('#searchItem').value;
+      
+      var wordsArray=words.split(" ");
+      console.log(wordsArray);
+
+      // load(link, ""):
+
+
+
+    }
+
+
+  
 
 });
+
+
 
 
 
