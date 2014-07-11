@@ -5,36 +5,46 @@ xhr.setRequestHeader('Accept', 'application/json'); //why accept
 
  var response=null;
 
+var audio=document.getElementById('audio');
+var progress=document.querySelector("progress")
+var dashboard=document.querySelector('.widget');
 
 xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
           console.log('onreadystatechange response', response);
-          insertUrl(response);
+          insertUrl(response,audio);
 
 
         }
       }
     };
 
-var insertUrl= function(response){
-  var link  = response.preview_url;
-  var audio=document.getElementById('audio');
-  audio.setAttribute('src', link);
+var insertUrl= function(response,audio){
+var link  = response.preview_url;
+audio.setAttribute('src', link);
 }
-var audio=document.getElementById('audio');
-var dashboard=document.querySelector('.widget');
+
 dashboard.addEventListener('click', function (evt){
-  if(evt.target.className==="btn-play disabled playing"){
+  if(evt.target.className==="btn-play disabled"){
     audio.play();
-    evt.target.classList.remove("playing");
-  }else if(evt.target.className==="btn-play disabled "){
-    audio.pause();
     evt.target.classList.add("playing");
+    setInterval(function(){
+      setProgress(audio,progress);
+    },500);
+  }else if(evt.target.className==="btn-play disabled playing"){
+    audio.pause();
+    evt.target.classList.remove("playing");
   }
 
 });
+
+var setProgress=function(audio,progress){
+  var ratio=30/audio.duration;
+  var progressValue=Math.floor(ratio*audio.currentTime);
+  progress.value=progressValue;
+}
 
 xhr.send();
 
