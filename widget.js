@@ -23,15 +23,18 @@ var insertUrl= function(response){
   var audio=document.getElementById('audio');
   audio.setAttribute('src', link);
 }
-
+var audio=document.getElementById('audio');
 var dashboard=document.querySelector('.widget');
 dashboard.addEventListener('click', function (evt){
   if(evt.target.className==="btn-play disabled"){
-      console.log(evt);
-
-    var audio=document.getElementById('audio');
     audio.play();
-  };
+    evt.target.classList.remove("disabled");
+    evt.target.classList.add("enabled");
+  }else if(evt.target.className==="btn-play enabled"){
+    audio.pause();
+    evt.target.classList.remove("enabled");
+    evt.target.classList.add("disabled");
+  }
 
 });
 
