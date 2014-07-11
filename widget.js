@@ -1,15 +1,25 @@
-var xhr=new XMLHttpRequest();
-var link= document.querySelector('input').value;
-xhr.open('GET', "https://api.spotify.com/v1/tracks/"+link);
-xhr.setRequestHeader('Accept', 'application/json'); //why accept
 
- var response=null;
+
+
+
+
+
+var link=document.querySelector('input').value;
+var response=null;
 
 var audio=document.getElementById('audio');
-var progress=document.querySelector("progress")
+var progress=document.querySelector("progress");
 var dashboard=document.querySelector('.widget');
 
-xhr.onreadystatechange = function () {
+
+var load = function (link){
+  console.log(link);
+  var xhr =new XMLHttpRequest();
+  xhr.open('GET', "https://api.spotify.com/v1/tracks/"+link);
+  xhr.setRequestHeader('Accept', 'application/json'); //why accept
+
+
+  xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
@@ -19,10 +29,31 @@ xhr.onreadystatechange = function () {
       }
     };
 
+
+    xhr.send();
+};
+
+
+load(link);
+
+
+
 var insertUrl= function(response,audio){
-var link  = response.preview_url;
+link  = response.preview_url;
 audio.setAttribute('src', link);
 }
+
+
+
+document.addEventListener('submit', function (evt){
+  evt.preventDefault();
+  link= document.querySelector('input').value;
+  console.log(link);
+  load(link);
+
+});
+
+
 
 dashboard.addEventListener('click', function (evt){
   if(evt.target.className==="btn-play disabled"){
@@ -44,7 +75,7 @@ var setProgress=function(audio,progress){
   progress.value=progressValue;
 }
 
-xhr.send();
+
 
 
 
