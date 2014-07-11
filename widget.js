@@ -12,8 +12,6 @@ xhr.onreadystatechange = function () {
           response = JSON.parse(this.response);
           console.log('onreadystatechange response', response);
           insertUrl(response);
-
-
         }
       }
     };
