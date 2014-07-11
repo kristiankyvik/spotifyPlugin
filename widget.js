@@ -26,14 +26,12 @@ var insertUrl= function(response){
 var audio=document.getElementById('audio');
 var dashboard=document.querySelector('.widget');
 dashboard.addEventListener('click', function (evt){
-  if(evt.target.className==="btn-play disabled"){
+  if(evt.target.className==="btn-play disabled playing"){
     audio.play();
-    evt.target.classList.remove("disabled");
-    evt.target.classList.add("enabled");
-  }else if(evt.target.className==="btn-play enabled"){
+    evt.target.classList.remove("playing");
+  }else if(evt.target.className==="btn-play disabled "){
     audio.pause();
-    evt.target.classList.remove("enabled");
-    evt.target.classList.add("disabled");
+    evt.target.classList.add("playing");
   }
 
 });
