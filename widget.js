@@ -6,8 +6,6 @@ var dashboard=document.querySelector('.widget');
 var results=document.querySelector("#results");
 
 var loadAudio = function (link){
-
-  console.log(link);
   var xhr =new XMLHttpRequest();
   xhr.open('GET', "https://api.spotify.com/v1/tracks/"+link);
   xhr.setRequestHeader('Accept', 'application/json'); //why accept
@@ -16,14 +14,14 @@ var loadAudio = function (link){
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
-          console.log('onreadystatechange response');
           insertUrl(response,audio);
+          document.querySelector(".metadata .title").textContent=response.name;
+          document.querySelector(".metadata .author").textContent=response.artists[0].name;
           audio.play();
           document.querySelector('.btn-play').classList.add("playing");
         }
       }
     };
-
     xhr.send();
 };
 
