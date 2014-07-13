@@ -12,12 +12,11 @@ var load = function (link, prefix){
   xhr.open('GET', "https://api.spotify.com/v1/"+prefix+link);
   xhr.setRequestHeader('Accept', 'application/json'); //why accept
 
-
   xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
-          console.log('onreadystatechange response', response);
+          console.log('onreadystatechange response');
           insertUrl(response,audio);
           audio.play();
           document.querySelector('.btn-play').classList.add("playing");
@@ -25,9 +24,11 @@ var load = function (link, prefix){
       }
     };
 
-
     xhr.send();
 };
+
+load(link, "tracks/");
+
 var loadSearch=function(link,prefix){
   var xhr =new XMLHttpRequest();
   xhr.open('GET', "https://api.spotify.com/v1/"+prefix+link);
@@ -36,7 +37,7 @@ var loadSearch=function(link,prefix){
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
-          console.log('onreadystatechange response', response);
+          console.log(response);
           putResults(response.tracks.items);
         }
       }
@@ -44,12 +45,7 @@ var loadSearch=function(link,prefix){
 
 
   xhr.send();
-}
-
-load(link, "tracks/");
-
-
-
+};
 var insertUrl= function(response,audio){
 link  = response.preview_url;
 audio.setAttribute('src', link);
@@ -59,18 +55,15 @@ audio.setAttribute('src', link);
 var parseSearch=function(query){
   var newValue="";
   for(var i=0;i<query.length;i++){
-    if(query[i]==" "){
+    if(query[i]==" ")
       newValue+="%20";
-    }
-    else{
+    else
       newValue+=query[i];
-    }
   }
   return newValue;
 };
 
 document.addEventListener('submit', function (evt){
-  console.log(evt);
     if(evt.target.id==='track'){
       evt.preventDefault();
       link= document.querySelector('input').value;
@@ -86,32 +79,34 @@ document.addEventListener('submit', function (evt){
       loadSearch(link, "search/?q=");
     }
 
-
-  
-
 });
-var putResults=function(array){
-  var ul=document.querySelector("ul");
-  for(var i=array.length-1;i>=0;i--){
+var putResults=function(object){
+  var ul=document.querySelector("#results");
+  //First we have to remove previous searches
+  while(ul.hasChildNodes()){
+    ul.removeChild(ul.firstChild);
+  }
+  for(var key in object){
     var artist=document.createElement("span");
     var song=document.createElement("span");
+    var li=document.createElement("li");
+    var a=document.createElement("a");
     artist.className="artist";
     song.className="song";
-    artist.textContent=array[i].artist[0].name;
-    artist.textContent=array[i].name;
-    ul.appendChild(artist);
-    ul.appendChild(song);
+    artist.textContent=object[key].artists[0].name;
+    song.textContent=object[key].name;
+    a.appendChild(artist);
+    a.appendChild(song);
+    li.appendChild(a);
+    ul.appendChild(li);
   }
 }
-
-
-
 
 dashboard.addEventListener('click', function (evt){
   if(evt.target.className==="btn-play disabled"){
     audio.play();
     evt.target.classList.add("playing");
-    
+
   }else if(evt.target.className==="btn-play disabled playing"){
     audio.pause();
     evt.target.classList.remove("playing");
@@ -121,6 +116,8 @@ dashboard.addEventListener('click', function (evt){
 
 audio.addEventListener('timeupdate',function(evt){
     setProgress(audio,progress);
+    if(audio.duration===audio.currentTime)
+      document.querySelector(".btn-play").classList.remove("playing")
 })
 
 var setProgress=function(audio,progress){
@@ -128,14 +125,3 @@ var setProgress=function(audio,progress){
   var progressValue=Math.floor(ratio*audio.currentTime);
   progress.value=progressValue;
 }
-
-
-
-
-
-    // send the request
-
-    // for sending JSON data through a POST request, you can do:
-    //
-    // xhr.setRequestHeader('Content-Type', 'application/json');
-    // xhr.send(JSON.stringify(dataObject));
