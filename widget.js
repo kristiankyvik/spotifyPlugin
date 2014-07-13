@@ -14,7 +14,7 @@ var loadAudio = function (link){
       if (this.readyState === 4) {
         if (this.status === 200) {
           response = JSON.parse(this.response);
-          insertUrl(response,audio);
+          audio.setAttribute('src', response.preview_url);
           document.querySelector(".metadata .title").textContent=response.name;
           document.querySelector(".metadata .author").textContent=response.artists[0].name;
           audio.play();
@@ -30,7 +30,7 @@ loadAudio(link);
 var loadSearch=function(link){
   var xhr =new XMLHttpRequest();
   xhr.open('GET', "https://api.spotify.com/v1/search/?q="+link);
-  xhr.setRequestHeader('Accept', 'application/json'); //why accept
+  xhr.setRequestHeader('Accept', 'application/json');
   xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
@@ -43,11 +43,6 @@ var loadSearch=function(link){
 
 
   xhr.send();
-};
-
-var insertUrl= function(response,audio){
-link  = response.preview_url;
-audio.setAttribute('src', link);
 };
 
 var parseSearch=function(query){
@@ -111,10 +106,11 @@ dashboard.addEventListener('click', function (evt){
   if(evt.target.className==="btn-play disabled"){
     audio.play();
     evt.target.classList.add("playing");
-
   }else if(evt.target.className==="btn-play disabled playing"){
     audio.pause();
     evt.target.classList.remove("playing");
+  }else if(evt.target.nodeName==="PROGRESS"){
+    audio.currentTime=evt.layerX/evt.target.clientWidth*audio.duration;
   }
 
 });
