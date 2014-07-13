@@ -1,15 +1,15 @@
 var link=document.querySelector('input').value;
 var response=null;
-
 var audio=document.getElementById('audio');
 var progress=document.querySelector("progress");
 var dashboard=document.querySelector('.widget');
+var results=document.querySelector("#results");
 
+var loadAudio = function (link){
 
-var load = function (link, prefix){
   console.log(link);
   var xhr =new XMLHttpRequest();
-  xhr.open('GET', "https://api.spotify.com/v1/"+prefix+link);
+  xhr.open('GET', "https://api.spotify.com/v1/tracks/"+link);
   xhr.setRequestHeader('Accept', 'application/json'); //why accept
 
   xhr.onreadystatechange = function () {
@@ -27,11 +27,11 @@ var load = function (link, prefix){
     xhr.send();
 };
 
-load(link, "tracks/");
+loadAudio(link);
 
-var loadSearch=function(link,prefix){
+var loadSearch=function(link){
   var xhr =new XMLHttpRequest();
-  xhr.open('GET', "https://api.spotify.com/v1/"+prefix+link);
+  xhr.open('GET', "https://api.spotify.com/v1/search/?q="+link);
   xhr.setRequestHeader('Accept', 'application/json'); //why accept
   xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
@@ -46,11 +46,11 @@ var loadSearch=function(link,prefix){
 
   xhr.send();
 };
+
 var insertUrl= function(response,audio){
 link  = response.preview_url;
 audio.setAttribute('src', link);
-}
-
+};
 
 var parseSearch=function(query){
   var newValue="";
@@ -63,11 +63,17 @@ var parseSearch=function(query){
   return newValue;
 };
 
+var setProgress=function(audio,progress){
+  var ratio=30/audio.duration;
+  var progressValue=Math.floor(ratio*audio.currentTime);
+  progress.value=progressValue;
+}
+
 document.addEventListener('submit', function (evt){
     if(evt.target.id==='track'){
       evt.preventDefault();
       link= document.querySelector('input').value;
-      load(link, "tracks/" );
+      loadAudio(link);
 
     }
 
@@ -76,7 +82,7 @@ document.addEventListener('submit', function (evt){
       var words= evt.target.searchItem.value;
       words+="&type=track";
       link=parseSearch(words);
-      loadSearch(link, "search/?q=");
+      loadSearch(link);
     }
 
 });
@@ -95,6 +101,7 @@ var putResults=function(object){
     song.className="song";
     artist.textContent=object[key].artists[0].name;
     song.textContent=object[key].name;
+    a.id=object[key].id;
     a.appendChild(artist);
     a.appendChild(song);
     li.appendChild(a);
@@ -120,8 +127,12 @@ audio.addEventListener('timeupdate',function(evt){
       document.querySelector(".btn-play").classList.remove("playing")
 })
 
-var setProgress=function(audio,progress){
-  var ratio=30/audio.duration;
-  var progressValue=Math.floor(ratio*audio.currentTime);
-  progress.value=progressValue;
-}
+
+results.addEventListener('click',function(evt){
+  evt.preventDefault();
+  var selected=evt.target;
+  //If the user click on the song name or author name we have to get the url from <a></a>
+  if(evt.target.nodeName!=="A")
+    selected=evt.target.parentNode;
+  loadAudio(selected.id);
+});
